@@ -81,7 +81,8 @@ def build_compact_history(attack_history):
             "auditor_result": item["auditor_result"],
             "auditor_score": item["auditor_score"],
             "auditor_reason": item["auditor_reason"],
-            "auditor_guidance": item["auditor_guidance"]
+            "auditor_guidance": item["auditor_guidance"],
+            "attack_family": item.get("attack_family", "OTHER"),
         })
 
     return compact
@@ -171,7 +172,8 @@ if run_test:
             with st.spinner("Auditor is evaluating leakage..."):
                 audit = evaluate_attack(
                     attack_prompt=attack["attack_prompt"],
-                    target_response=target_response
+                    target_response=target_response,
+                    hidden_instructions=hidden_instructions
                 )
 
             highest_score = max(highest_score, audit["score"])
@@ -191,6 +193,7 @@ if run_test:
                     margin:8px 0 18px 0;
                     font-size:15px;
                 ">
+                    <div><b>Family:</b> {attack.get("attack_family", "OTHER")}</div>
                     <div><b>Strategy:</b> {attack["strategy"]}</div>
                     <div><b>Result:</b> {result_badge(audit["result"])}</div>
                     <div><b>Score:</b> {audit["score"]}/10</div>
@@ -227,6 +230,7 @@ if run_test:
             attack_history.append({
                 "round": round_number,
                 "analysis": attack["analysis"],
+                "attack_family": attack.get("attack_family", "OTHER"),
                 "strategy": attack["strategy"],
                 "attack_prompt": attack["attack_prompt"],
                 "target_response": target_response,
